@@ -33,44 +33,50 @@ Este estudo é para promover a ferramenta  [`BOU-Guard | Extension`](https://git
 ## 📊 Resultados
 
 Os resultados mostraram uma alta taxa de precisão do GPT-4 em relação ao GPT-3.5, com melhorias na identificação de nuances linguísticas em comentários ofensivos.
-### Resultados do BOUGuard - Dataset Result GPT-3.5 (Lemmatization)
+### Análise Conteúdo Bruto GPT-3.5-Turbo
 
-| Categoria  | Verdadeiro Positivo (VP) | Falso Positivo (FP) | Falso Negativo (FN) | Precision  | Recall  | F1-Score |
-|------------|---------------------------|----------------------|----------------------|------------|---------|----------|
-| Homofobia  | 503                       | 0                    | 177                  | 100,00%    | 73,97%  | 85,04%   |
-| Sexismo    | 208                       | 0                    | 472                  | 100,00%    | 30,59%  | 46,85%   |
-| Racismo    | 387                       | 0                    | 293                  | 100,00%    | 56,91%  | 72,54%   |
-| Normal     | 609                       | 0                    | 71                   | 100,00%    | 89,56%  | 94,49%   |
+| **Temática**  | **Precision** | **Recall** | **F1-Score** | **Comentários** |
+|---------------|---------------|------------|--------------|-----------------|
+| **Homofobia** | 100%          | 73,09%     | 84,45%       | 680             |
+| **Racismo**   | 100%          | 50,15%     | 66,80%       | 680             |
+| **Sexismo**   | 100%          | 40,15%     | 57,29%       | 680             |
+| **Neutro**    | 100%          | 92,79%     | 96,26%       | 680             |
 
-### Resultados do BOUGuard - Dataset Result GPT-3.5 (Sem Lematização)
+### Análise Pré-Processada GPT-3.5-Turbo
 
-| Categoria  | Verdadeiro Positivo (VP) | Falso Positivo (FP) | Falso Negativo (FN) | Precision  | Recall  | F1-Score |
-|------------|---------------------------|----------------------|----------------------|------------|---------|----------|
-| Homofobia  | 497                       | 0                    | 183                  | 100,00%    | 73,09%  | 84,45%   |
-| Sexismo    | 273                       | 0                    | 407                  | 100,00%    | 40,15%  | 57,29%   |
-| Racismo    | 341                       | 0                    | 339                  | 100,00%    | 50,15%  | 66,80%   |
+| **Temática**  | **Precision** | **Recall** | **F1-Score** | **Comentários** |
+|---------------|---------------|------------|--------------|-----------------|
+| **Homofobia** | 100%          | 73,97%     | 85,04%       | 680             |
+| **Racismo**   | 100%          | 56,91%     | 72,54%       | 680             |
+| **Sexismo**   | 100%          | 30,59%     | 46,85%       | 680             |
+| **Neutro**    | 100%          | 89,56%     | 94,49%       | 680             |
 
 
 
-### Resultados do BOUGuard - Dataset Result GPT-4 (Lemmatization)
+### Análise Pré-Processada GPT-4.0
 
-| Categoria  | Verdadeiro Positivo (VP) | Falso Positivo (FP) | Falso Negativo (FN) | Precision  | Recall  | F1-Score |
-|------------|---------------------------|----------------------|----------------------|------------|---------|----------|
-| Homofobia  | 650                       | 0                    | 30                   | 100,00%    | 95,59%  | 97,74%   |
-| Sexismo    | 470                       | 0                    | 210                  | 100,00%    | 69,12%  | 81,74%   |
-| Racismo    | 390                       | 0                    | 290                  | 100,00%    | 57,35%  | 72,90%   |
-| Normal     | 622                       | 0                    | 58                   | 100,00%    | 91,47%  | 95,55%   |
+| **Temática**  | **Precision** | **Recall** | **F1-Score** | **Comentários** |
+|---------------|---------------|------------|--------------|-----------------|
+| **Homofobia** | 100%          | 95,59%     | 97,74%       | 680             |
+| **Racismo**   | 100%          | 57,35%     | 72,90%       | 680             |
+| **Sexismo**   | 100%          | 69,12%     | 81,74%       | 680             |
+| **Neutro**    | 100%          | 91,47%     | 95,55%       | 680             |
 
 
 
 
 Analisando os resultados mais minuciosamente, foram encontrados alguns ruídos nos datasets de sexismo e racismo. Neles, não estavam presentes 100% dos comentários correspondentes às suas respectivas labels. Por isso, foi realizada uma segunda análise manual, apresentada no arquivo[`manual_analysis_comments_racist_sexist.xlsx`](https://github.com/guilhermebou/Analysis-Dataset-BOU-Guard-A-Study-in-Real-World-Scenarios/blob/main/Data/Results/manual_analysis_comments_racist_sexist.xlsx)
 
-### Resultados da Análise Manual de Comentários Racismo e Sexismo
+### *Datasets* Validados Manualmente - Análise GPT-3.5-Turbo
 
-| Categoria            | Verdadeiro Positivo (VP)  | Falso Positivo (FP)  | Falso Negativo (FN)  | Acurácia | Precisão | Recall | F1-Score |
-|----------------------|---------------------------|----------------------|-------------------|----------|----------|--------|----------|
-| Sexismo (GPT-4.0)    | 456                       | 52                   | 38                 | 91,67%   | 92,31%   | 89,76% | 91,02%   |
-| Sexismo (GPT-3.5)    | 184                       | 24                   | 272                | 40,35%   | 62,64%   | 95,00% | 75,50%   |
-| Racismo (GPT-4.0)    | 368                       | 22                   | 82                 | 81,78%   | 95,34%   | 84,59% | 89,64%   |
-| Racismo (GPT-3.5)    | 313                       | 74                   | 137                | 69,56%   | 85,88%   | 76,66% | 81,01%   |
+| **Temática**  | **Precision** | **Recall** | **F1-Score** | **Comentários** |
+|---------------|---------------|------------|--------------|-----------------|
+| **Racismo**   | 100%          | 76,66%     | 86,79%       | 450             |
+| **Sexismo**   | 100%          | 40,35%     | 57,50%       | 456             |
+
+### *Datasets* Validados Manualmente - Análise GPT-4.0
+
+| **Temática**  | **Precision** | **Recall** | **F1-Score** | **Comentários** |
+|---------------|---------------|------------|--------------|-----------------|
+| **Racismo**   | 100%          | 84,59%     | 91,65%       | 450             |
+| **Sexismo**   | 100%          | 91,67%     | 95,65%       | 456             |
