@@ -27,8 +27,12 @@ Este estudo é para promover a ferramenta  [`BOU-Guard | Extension`](https://git
 ## 🧪 Metodologia
 
 1. **Coleta de Dados**: Extração de comentários de redes sociais.
-2. **Análise**: Classificação utilizando LLMs (GPT-3.5 e GPT-4).
-3. **Comparação de Resultados**: Medição de desempenho, utilizando metricas como Recall, Precision e F1-SCORE.
+2. **Pre-processamento**: Aplicação de técnicas de análise de dados e pré-processamento.
+3. **Análise**: Classificação utilizando LLMs (GPT-3.5 e GPT-4).
+4. **Comparação de Resultados**: Medição de desempenho, utilizando metricas como Recall, Precision e F1-SCORE.
+
+![Detalhamento da Metodologia Empregada.](docs/midia/Fluxograma.png)
+
 
 ## 📊 Resultados
 
