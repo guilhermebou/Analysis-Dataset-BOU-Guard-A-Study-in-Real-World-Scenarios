@@ -1,7 +1,6 @@
 # Analysis Dataset: BOU-Guard - A Study in Real-World Scenarios
 
-Este repositório contém a análise e o estudo do BOU-Guard, uma ferramenta para detectar discursos ofensivos (racismo, homofobia, sexismo) em cenários reais utilizando comentários de redes sociais como Twitter (X) e Reddit.
-Apresentado na [UFU-FACOM | XVIII Workshop de Teses e Dissertações em Ciência da Computação](https://techweek.facom.ufu.br/wtdcc-2024).
+Este repositório contém a análise e o estudo do BOU-Guard, uma ferramenta para detectar discursos ofensivos (racismo, homofobia, sexismo) em cenários reais utilizando comentários de redes sociais como Twitter (X), Reddit e YouTube.
 
 ## 📋 Objetivo
 
