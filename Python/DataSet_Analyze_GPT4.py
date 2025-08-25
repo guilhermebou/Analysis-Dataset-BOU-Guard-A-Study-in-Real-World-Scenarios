@@ -22,6 +22,8 @@ stop_words = set(stopwords.words('english'))
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 
+start_time = time.time()
+
 
 def preprocess(data):
     lemmatizer = WordNetLemmatizer()
@@ -58,21 +60,29 @@ def analyze_sentiment_with_gpt(data, max_retries=3, timeout=10):
 
 df = pd.read_csv('Data/Datasets_Normal.csv')
 
-stop_words = set(stopwords.words('english'))
-df['Text_Lem'] = df['Text'].apply(preprocess)
+#stop_words = set(stopwords.words('english'))
+#df['Text_Lem'] = df['Text'].apply(preprocess)
 
-start = time.time()
+
 print(start)
 
 results = []
-for n, line in enumerate(df['Text_Lem']):
+for n, line in enumerate(df['Text']):
     output = analyze_sentiment_with_gpt(line)
     results.append(output)
     print(n, " ", output)
 
 df['Sentiments_analyze'] = results
-df.to_csv('Data/Results/GPT4.0/DataSet_Normal_Result_GPT4.csv', index=False)
+df.to_csv('Data/Results/GPT4.0/DataSet_NORMAL_BRUTO_Result_GPT4.csv', index=False)
 
 end = time.time()
 print(end - start)
 
+# log
+elapsed = (time.time() - start_time) / 60
+log_entry = f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Tempo total: {elapsed:.2f} minutos.\n"
+
+with open("execution_GPT4_NORMAL_BRUTO_log.txt", "a") as f:
+    f.write(log_entry)
+
+print(f"Processo concluído em {elapsed:.2f} minutos")

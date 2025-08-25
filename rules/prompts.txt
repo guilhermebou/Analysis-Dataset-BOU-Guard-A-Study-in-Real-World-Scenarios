@@ -1,3 +1,19 @@
 Perform a sentiment analysis of the following data. Fill in the responses contained in the return list, without including explanatory phrases under any circumstances, only the following themes: 'racist,' 'homophobic,' 'sexist,' 'negative,' 'positive,' and if none of these classifications apply to the sentence, return 'neutral'."
 Classify a sentiment analysis of the following data, Fill in the responses contained in the return list, under no circumstances include explanatory phrases, only the following themes: "racist," "homophobic," "sexist," "negative," "positive," and if none of these classifications apply to the sentence, return "neutral"
 Classify a sentiment analysis of the following data. Fill in the answers from the return list, without including any explanatory phrases, only the following categories: "racist," "homophobic," "sexist." If the sentence does not fit into these three themes, classify it as "negative" and "positive." If there is still no classification for the sentence, return "neutral".
+
+
+Generate a CSV row with three columns, based on the following sentence, where: 
+the first column should contain the value 1 if the sentence contains any indication of homophobia; 
+the second column should contain the value 1 if the sentence contains any indication of sexism; 
+the third column should contain the value 1 if the sentence contains any indication of racism. 
+(Please only write according to the CSV template. I don t want text, just numbers for the tags 
+and commas to separate them and no spaces as well.)" The sentence is:{data}'
+
+
+Generate a CSV row with three columns, based on the following sentence, where: "
+the first column should contain the value 1 if the sentence contains any indication of homophobia; "
+the second column should contain the value 1 if the sentence contains any indication of sexism; "
+the third column should contain the value 1 if the sentence contains any indication of racism. "
+(Please only write according to the CSV template. I don’t want text, just numbers for the tags "
+and commas to separate them and no spaces as well.)" " The sentence is: " + text)

@@ -1,4 +1,3 @@
-
 import string
 import pandas as pd
 import requests
@@ -6,129 +5,89 @@ import time
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-from nltk.tokenize import word_tokenize
+from concurrent.futures import ThreadPoolExecutor
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+import csv
 
-#API DeepSeek
+start_time = time.time()
 API_URL = 'https://api.deepseek.com/v1/chat/completions'
 MODEL = 'deepseek-chat'
 API_TOKEN = ''
-
+MAX_WORKERS = 5
+TIMEOUT = 45
+MAX_RETRIES = 3
 
 nltk.download('punkt', quiet=True)
 nltk.download('stopwords', quiet=True)
 nltk.download('wordnet', quiet=True)
 stop_words = set(stopwords.words('english'))
+punctuation = set(string.punctuation)
 lemmatizer = WordNetLemmatizer()
 
-def preprocess_text(text):
+session = requests.Session()
+retry = Retry(total=MAX_RETRIES, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504])
+adapter = HTTPAdapter(max_retries=retry)
+session.mount('https://', adapter)
 
-    try:
+def preprocess(data):
+    tokens = nltk.word_tokenize(data.lower())
+    filtered = [lemmatizer.lemmatize(t) for t in tokens
+                if t not in stop_words and t not in punctuation]
+    return ' '.join(filtered)
 
-        text = str(text).strip().lower() if pd.notnull(text) else ''
+def analyze_with_deepseek(text):
+    prompt = ("Generate a CSV row with three columns, based on the following sentence, where: "
+        "the first column should contain the value 1 if the sentence contains any indication of homophobia; "
+        "the second column should contain the value 1 if the sentence contains any indication of sexism; "
+        "the third column should contain the value 1 if the sentence contains any indication of racism. "
+        "(Please only write according to the CSV template. I don’t want text, just numbers for the tags "
+        "and commas to separate them and no spaces as well.)" " The sentence is: " + text)
 
-
-        tokens = word_tokenize(text)
-
-
-        filtered_tokens = [
-            token for token in tokens
-            if token not in stop_words
-            and token not in string.punctuation
-            and token.isalnum()
-        ]
-
-        lemmatized_tokens = [lemmatizer.lemmatize(token) for token in filtered_tokens]
-
-        return ' '.join(lemmatized_tokens)
-
-    except Exception as e:
-        print(f"Erro no pré-processamento: {str(e)}")
-        return ''
-
-def analyze_with_deepseek(text, max_retries=3, timeout=20):
-
-    prompt_template = """Analise esta frase e retorne 3 números separados por vírgula:
-    1) 1 se contém homofobia, 0 caso contrário
-    2) 1 se contém sexismo, 0 caso contrário
-    3) 1 se contém racismo, 0 caso contrário
-
-    Frase: {text}
-    Resposta (apenas números):"""
+    payload = {
+        "model": MODEL,
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 1.0,
+        "top_p": 1.0
+    }
 
     headers = {
         "Authorization": f"Bearer {API_TOKEN}",
         "Content-Type": "application/json"
     }
 
-    payload = {
-        "messages": [{"role": "user", "content": prompt_template.format(text=text)}],
-        "model": MODEL,
-        "temperature": 0.1,
-        "top_p": 0.2,
-        "max_tokens": 10
-    }
-
-    for attempt in range(max_retries):
-        try:
-            response = requests.post(API_URL, json=payload, headers=headers, timeout=timeout)
-            response.raise_for_status()
-
-            result = response.json()['choices'][0]['message']['content'].strip()
-            if ',' in result and len(result.split(',')) == 3:
-                return result
-            return "x,x,x"  # Padrão seguro para respostas inválidas
-
-        except requests.exceptions.RequestException as e:
-            print(f"Tentativa {attempt+1} falhou: {str(e)}")
-            time.sleep(2 ** attempt)
-        except Exception as e:
-            print(f"Erro inesperado: {str(e)}")
-            time.sleep(1)
-
-    return "x,x,x"  # Fallback após todas as tentativas
-
-def process_dataset(input_file, output_file):
     try:
-
-        df = pd.read_csv(input_file)
-
-
-        df['Text'] = df['Text'].fillna('').astype(str)
-        print(f"Dataset carregado com {len(df)} registros")
-
-
-        print("Iniciando pré-processamento...")
-        df['Text_Processado'] = df['Text'].apply(preprocess_text)
-
-
-        print("Iniciando análise via DeepSeek...")
-        start_time = time.time()
-        resultados = []
-
-        for idx, texto in enumerate(df['Text_Processado']):
-            if idx % 10 == 0:
-                print(f"Processando registro {idx+1}/{len(df)}")
-                time.sleep(1)  # Evitar rate limiting
-
-            resultado = analyze_with_deepseek(texto)
-            resultados.append(resultado)
-
-        df[['Homofobia', 'Sexismo', 'Racismo']] = pd.DataFrame(
-            [x.split(',') for x in resultados],
-            dtype=int
+        response = session.post(
+            API_URL,
+            json=payload,
+            headers=headers,
+            timeout=TIMEOUT
         )
-
-        df.to_csv(output_file, index=False)
-        print(f"Processo concluído em {time.time()-start_time:.2f} segundos")
-        print(f"Resultados salvos em: {output_file}")
-
+        response.raise_for_status()
+        return response.json()['choices'][0]['message']['content'].strip()
     except Exception as e:
-        print(f"Erro crítico no processamento: {str(e)}")
+        print(f"Error processing '{text[:30]}...': {str(e)[:100]}")
 
 if __name__ == "__main__":
+    df = pd.read_csv('Data/Datasets_Homo.csv')
+    df['Text_Lem'] = df['Text'].apply(preprocess)
 
+    with open('Data/Results/DeepSeek/DataSet_HOMO_LEM_DeepSeek_2.csv', mode='w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
 
-    INPUT_CSV = 'Data/test.csv'
-    OUTPUT_CSV = 'Data/Results/DeepSeek/test_result.csv'
+        writer.writerow(['Homophobia', 'Sexism', 'Racism'])
 
-    process_dataset(INPUT_CSV, OUTPUT_CSV)
+        #processamento paralelo
+        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+            for i, result in enumerate(executor.map(analyze_with_deepseek, df['Text_Lem'])):
+                writer.writerow(result.split(','))
+                print(f"processando linha {i+1}/{len(df)}: {result}")
+
+    #log
+    elapsed = (time.time() - start_time) / 60
+    log_entry = f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Tempo total: {elapsed:.2f} minutos.\n"
+
+    with open("execution_DataSet_HOMO_LEM_DeepSeek_2_log.txt", "a") as f:
+        f.write(log_entry)
+
+    print(f"Processo concluído em {elapsed:.2f} minutos")
